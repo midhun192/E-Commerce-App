@@ -1,8 +1,11 @@
 import 'package:ecommerce_app/models/product_model.dart';
 import 'package:ecommerce_app/models/shop_model.dart';
 import 'package:ecommerce_app/utils/app_colors.dart';
+import 'package:ecommerce_app/widgets/button.dart';
+import 'package:ecommerce_app/widgets/custom_button.dart';
 import 'package:ecommerce_app/widgets/custom_drawer.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
 class CartPage extends StatelessWidget {
@@ -37,6 +40,31 @@ class CartPage extends StatelessWidget {
         });
   }
 
+  void onPayButton(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          content: const Text('Are you Sure you want to Proceed'),
+          actions: [
+            MaterialButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('Cancel'),
+            ),
+            MaterialButton(
+              onPressed: () {
+                Navigator.pushNamed(context, "/checkout_page");
+              },
+              child: const Text('Yes'),
+            )
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final cart = context.watch<Shop>().cart;
@@ -47,34 +75,55 @@ class CartPage extends StatelessWidget {
         foregroundColor: AppColors.inversePrimaryColor,
         elevation: 0,
         centerTitle: true,
-        title: Text('Cart Page'),
+        title: const Text('Cart Page'),
       ),
-      drawer: CustomDrawer(),
+      drawer: const CustomDrawer(),
       backgroundColor: AppColors.backgroundColor,
-      body: Expanded(
-        child: cart.isEmpty
-            ? const Center(
-                child: Text('Your Cart is Empty...'),
-              )
-            : ListView.builder(
-                itemBuilder: (context, index) {
-                  // Individual Cart Items
-                  final item = cart[index];
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            Expanded(
+              child: cart.isEmpty
+                  ? const Center(
+                      child: Text('Your Cart is Empty...'),
+                    )
+                  : ListView.builder(
+                      itemBuilder: (context, index) {
+                        // Individual Cart Items
+                        final item = cart[index];
 
-                  return ListTile(
-                    title: Text(item.name),
-                    subtitle: Text(item.price.toStringAsFixed(2)),
-                    trailing: IconButton(
-                      color: Colors.red[400],
-                      onPressed: () {
-                        removeItem(context, item);
+                        return ListTile(
+                          leading: ConstrainedBox(
+                            constraints: BoxConstraints(
+                                minWidth: 44.h,
+                                minHeight: 64.h,
+                                maxHeight: 64.h,
+                                maxWidth: 44.h),
+                            child: Image.asset(item.imagePath),
+                          ),
+                          title: Text(item.name),
+                          subtitle: Text("\$ " + item.price.toStringAsFixed(2)),
+                          trailing: IconButton(
+                            color: Colors.red[400],
+                            onPressed: () {
+                              removeItem(context, item);
+                            },
+                            icon: Icon(Icons.cancel_outlined),
+                          ),
+                        );
                       },
-                      icon: Icon(Icons.cancel_outlined),
+                      itemCount: cart.length,
                     ),
-                  );
-                },
-                itemCount: cart.length,
-              ),
+            ),
+            CustomButton(
+              onTap: () {
+                return onPayButton(context);
+              },
+              child: const Text("Proceed to Checkout"),
+            ),
+          ],
+        ),
       ),
     );
   }

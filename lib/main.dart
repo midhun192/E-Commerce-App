@@ -1,5 +1,6 @@
 import 'package:ecommerce_app/models/shop_model.dart';
 import 'package:ecommerce_app/pages/cart_page.dart';
+import 'package:ecommerce_app/pages/checkout_page.dart';
 import 'package:ecommerce_app/pages/main_page.dart';
 import 'package:ecommerce_app/pages/screen_home.dart';
 import 'package:flutter/material.dart';
@@ -52,6 +53,7 @@ class MyApp extends StatelessWidget {
             "/screen_home": (context) => const HomeScreen(),
             "/main_page": (context) => const MainPage(),
             "/cart_page": (context) => const CartPage(),
+            "/checkout_page": (context) => const CheckoutPage(),
           },
           home: const HomeScreen(),
         );
